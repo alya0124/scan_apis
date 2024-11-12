@@ -1,11 +1,15 @@
 from flask import Flask, jsonify, request
+from functools import wraps
 import nmap
 import psycopg2
 import json
 from psycopg2 import sql
+from flask_cors import CORS
 
 app = Flask(__name__, static_folder='static', template_folder='templates')
+CORS(app, resources={r"/*": {"origins": "*"}})  # Habilitar CORS para todos los dominios
 
+API_KEY = "058117aym024MR?"
 DATABASE_URL = "postgresql://scan_user:your_password@localhost:5432/scan_db"
 nm = nmap.PortScanner()
 
@@ -28,7 +32,17 @@ def create_table():
     conn.commit()
     conn.close()
 
+# Decorador para verificar la clave API
+def require_api_key(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if request.headers.get('x-api-key') != API_KEY:
+            return jsonify({'error': 'Unauthorized'}), 401
+        return f(*args, **kwargs)
+    return decorated_function
+
 @app.route('/scan', methods=['GET', 'POST'])
+@require_api_key
 def scan_ip():
     datos = request.get_json()
     ip = datos.get('ip', '')
@@ -63,6 +77,7 @@ def scan_ip():
     return jsonify(scan_result), 200
 
 @app.route('/insert-scan', methods=['POST'])
+@require_api_key
 def insert_scan():
     data = request.get_json()
     ip = data.get('ip')
@@ -91,6 +106,7 @@ def insert_scan():
     return jsonify({'message': 'Datos insertados correctamente'}), 200
 
 @app.route('/get-scans', methods=['GET'])
+@require_api_key
 def get_scans():
     conn = get_db_connection()
     cursor = conn.cursor()
@@ -112,6 +128,7 @@ def get_scans():
     return jsonify(scans)
 
 @app.route('/update-scan', methods=['PUT'])
+@require_api_key
 def update_scan():
     data = request.get_json()
     scan_id = data.get('id')
@@ -142,6 +159,7 @@ def update_scan():
     return jsonify({'message': 'Registro actualizado correctamente'}), 200
 
 @app.route('/delete-scan', methods=['DELETE'])
+@require_api_key
 def delete_scan():
     data = request.get_json()
     scan_id = data.get('id')
