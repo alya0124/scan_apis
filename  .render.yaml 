@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: mi-app
+    env: python
+    buildCommand: ./build.sh    # Ejecuta el script de construcción
+    startCommand: gunicorn app:app --bind 0.0.0.0:5000
+    envVars:
+      - key: FLASK_ENV
+        value: production
+    plan: free
+    region: oregon
