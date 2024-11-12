@@ -10,7 +10,7 @@ app = Flask(__name__, static_folder='static', template_folder='templates')
 CORS(app, resources={r"/*": {"origins": "*"}})  # Habilitar CORS para todos los dominios
 
 API_KEY = "058117aym024MR?"
-DATABASE_URL = "postgresql://scan_user:your_password@localhost:5432/scan_db"
+DATABASE_URL = "postgresql://scan_user:mVkHQPqMUsDaJICn9V15jWDNOMIRFrle@dpg-cspu3dlumphs73dn0b70-a.oregon-postgres.render.com/scan_db"
 nm = nmap.PortScanner()
 
 def get_db_connection():
