@@ -1,0 +1,22 @@
+# Usar una imagen base de Python
+FROM python:3.9-slim
+
+# Establecer el directorio de trabajo
+WORKDIR /app
+
+# Instalar nmap y dependencias necesarias para PostgreSQL
+RUN apt-get update && apt-get install -y \
+    nmap \
+    && rm -rf /var/lib/apt/lists/*  # Limpiar la cache de apt-get para reducir el tamaño de la imagen
+
+# Copiar los archivos del proyecto al contenedor
+COPY . /app
+
+# Instalar las dependencias de Python
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Exponer el puerto en el que se ejecutará la aplicación
+EXPOSE 8080
+
+# Comando para ejecutar la aplicación Flask
+CMD ["python", "app.py"]

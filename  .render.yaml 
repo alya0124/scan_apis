@@ -1,11 +1,10 @@
 services:
   - type: web
-    name: mi-app
-    env: python
-    buildCommand: ./build.sh    # Ejecuta el script de construcción
-    startCommand: gunicorn app:app --bind 0.0.0.0:5000
-    envVars:
-      - key: FLASK_ENV
-        value: production
-    plan: free
-    region: oregon
+    name: flask-app
+    env: docker
+    dockerfilePath: ./Dockerfile
+    buildCommand: |
+      # Cualquier comando adicional de construcción que necesites
+      pip install -r requirements.txt
+    startCommand: python app.py
+    port: 8080
